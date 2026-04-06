@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AIS — AI Seismograph</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  :root {
+    --bg: #0b0f1a;
+    --card: #131927;
+    --border: #1e2a3a;
+    --text: #e0e6f0;
+    --muted: #7a8ba8;
+    --accent: #4f8cff;
+    --green: #34d399;
+    --red: #f87171;
+    --yellow: #fbbf24;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+  }
+  .container { max-width: 1080px; margin: 0 auto; padding: 0 24px; }
+
+  /* HERO */
+  .hero {
+    text-align: center;
+    padding: 80px 24px 48px;
+    background: linear-gradient(180deg, #111827 0%, var(--bg) 100%);
+  }
+  .hero-badge {
+    display: inline-block;
+    background: rgba(79,140,255,0.12);
+    color: var(--accent);
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 6px 16px;
+    border-radius: 20px;
+    margin-bottom: 20px;
+  }
+  .hero h1 {
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    margin-bottom: 16px;
+  }
+  .hero h1 span { color: var(--accent); }
+  .hero p {
+    color: var(--muted);
+    font-size: 1.1rem;
+    max-width: 640px;
+    margin: 0 auto 24px;
+  }
+  .quarter-label {
+    display: inline-block;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 20px;
+    font-size: 0.95rem;
+    color: var(--muted);
+  }
+  .quarter-label strong { color: var(--text); }
+
+  /* SECTIONS */
+  section { padding: 56px 0; }
+  section h2 {
+    font-size: 1.6rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  section .subtitle {
+    color: var(--muted);
+    margin-bottom: 32px;
+    font-size: 0.95rem;
+  }
+
+  /* CARDS */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 28px;
+    margin-bottom: 24px;
+  }
+
+  /* CHART */
+  .chart-wrap { position: relative; width: 100%; }
+  .chart-wrap canvas { width: 100% !important; }
+
+  /* RESOLUTION TABLE */
+  .res-table { width: 100%; border-collapse: collapse; font-size: 0.92rem; }
+  .res-table th {
+    text-align: left;
+    color: var(--muted);
+    font-weight: 600;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  .res-table td {
+    padding: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  .res-table tr:last-child td { border-bottom: none; }
+  .badge-yes {
+    background: rgba(52,211,153,0.15);
+    color: var(--green);
+    padding: 3px 10px;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 0.82rem;
+  }
+  .badge-no {
+    background: rgba(248,113,113,0.15);
+    color: var(--red);
+    padding: 3px 10px;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 0.82rem;
+  }
+  .change-pos { color: var(--green); font-weight: 600; }
+  .change-neg { color: var(--red); font-weight: 600; }
+  .change-flat { color: var(--muted); }
+
+  /* RISK CARDS */
+  .risk-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
+  .risk-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 24px;
+    transition: border-color 0.2s;
+  }
+  .risk-card:hover { border-color: var(--accent); }
+  .risk-card .risk-num {
+    color: var(--accent);
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 6px;
+  }
+  .risk-card h3 { font-size: 1.05rem; margin-bottom: 8px; }
+  .risk-card p { color: var(--muted); font-size: 0.88rem; line-height: 1.55; }
+
+  /* FOOTER */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 32px 0;
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.85rem;
+  }
+  footer a { color: var(--accent); text-decoration: none; }
+
+  /* NAV */
+  nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(11,15,26,0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 14px 0;
+  }
+  nav .inner {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  nav .logo { font-weight: 800; font-size: 1.1rem; }
+  nav .logo span { color: var(--accent); }
+  nav .links { display: flex; gap: 24px; }
+  nav .links a { color: var(--muted); text-decoration: none; font-size: 0.88rem; font-weight: 500; transition: color 0.2s; }
+  nav .links a:hover { color: var(--text); }
+
+  @media (max-width: 640px) {
+    nav .links { gap: 14px; }
+    nav .links a { font-size: 0.8rem; }
+    .risk-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="inner">
+    <div class="logo"><span>AI</span> Seismograph</div>
+    <div class="links">
+      <a href="#ranking">Ranking</a>
+      <a href="#changes">Changes</a>
+      <a href="#risks">Risks</a>
+    </div>
+  </div>
+</nav>
+
+<div class="hero">
+  <div class="hero-badge">Quarterly AI Risk Index</div>
+  <h1>AI <span>Seismograph</span></h1>
+  <p>Tracking the relative salience of 10 AI risk categories through global search trends. Updated quarterly to power prediction markets.</p>
+  <div class="quarter-label">Latest quarter: <strong>Q1 2026</strong> &nbsp;|&nbsp; Baseline: Q4 2025</div>
+</div>
+
+<div class="container">
+
+  <!-- CURRENT RANKING -->
+  <section id="ranking">
+    <h2>Current Ranking — Q1 2026</h2>
+    <p class="subtitle">Normalized scores out of 1,000 total points (average = 100). Higher score = more global search interest relative to other AI risks.</p>
+    <div class="card">
+      <div class="chart-wrap"><canvas id="rankingChart" height="380"></canvas></div>
+    </div>
+  </section>
+
+  <!-- QUARTER CHANGES -->
+  <section id="changes">
+    <h2>Quarter-over-Quarter Changes</h2>
+    <p class="subtitle">Score changes from Q4 2025 (baseline) to Q1 2026. A rise of +1.0 or more resolves as YES on prediction markets.</p>
+    <div class="card">
+      <div class="chart-wrap"><canvas id="changeChart" height="360"></canvas></div>
+    </div>
+
+    <div class="card" style="margin-top: 24px;">
+      <h3 style="font-size: 1.05rem; margin-bottom: 16px;">Resolution Table</h3>
+      <div style="overflow-x: auto;">
+        <table class="res-table">
+          <thead>
+            <tr>
+              <th>Risk</th>
+              <th>Q4 2025</th>
+              <th>Q1 2026</th>
+              <th>Change</th>
+              <th>Resolution</th>
+            </tr>
+          </thead>
+          <tbody id="resTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- RISK DESCRIPTIONS -->
+  <section id="risks">
+    <h2>Risk Categories</h2>
+    <p class="subtitle">The 10 AI risk categories tracked by the AI Seismograph, grouped by scope of impact.</p>
+
+    <h3 style="color: var(--muted); font-size: 0.82rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px;">Individual Harms</h3>
+    <div class="risk-grid" style="margin-bottom: 32px;">
+      <div class="risk-card">
+        <div class="risk-num">1 — Disinfo</div>
+        <h3>AI-Generated Disinformation &amp; Synthetic Media</h3>
+        <p>AI enables mass production of deepfakes, voice clones, and generated text, eroding shared reality and societal trust. When people cannot distinguish truth from fabrication, the information ecosystem degrades.</p>
+      </div>
+      <div class="risk-card">
+        <div class="risk-num">2 — Jobs</div>
+        <h3>Labor Displacement &amp; Workforce Disruption</h3>
+        <p>AI threatens professions from manual to creative work. The problem is unprecedented speed of change: individuals and institutions cannot adapt fast enough, risking mass structural unemployment.</p>
+      </div>
+      <div class="risk-card">
+        <div class="risk-num">4 — Privacy</div>
+        <h3>Privacy Erosion &amp; AI-Powered Mass Surveillance</h3>
+        <p>Advanced AI analytics combined with biometrics enable unprecedented population-wide monitoring, wholesale loss of anonymity, and construction of social credit systems that suppress individual freedom.</p>
+      </div>
+      <div class="risk-card">
+        <div class="risk-num">9 — Meaning</div>
+        <h3>Mental Health, Relationships &amp; Crisis of Meaning</h3>
+        <p>AI companions may deepen social isolation and atrophy human relationships. At an existential level, this challenges human motivation in a world where machines produce art, ideas, and work faster.</p>
+      </div>
+    </div>
+
+    <h3 style="color: var(--muted); font-size: 0.82rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px;">Societal Harms</h3>
+    <div class="risk-grid" style="margin-bottom: 32px;">
+      <div class="risk-card">
+        <div class="risk-num">3 — Democracy</div>
+        <h3>Political Manipulation &amp; Threats to Democracy</h3>
+        <p>Systematic exploitation of AI for voter micro-targeting and radicalization. AI analyzes psychological profiles to deliver content that traps people in filter bubbles and manipulates elections.</p>
+      </div>
+      <div class="risk-card">
+        <div class="risk-num">8 — Inequality</div>
+        <h3>Concentration of Wealth &amp; Economic Power</h3>
+        <p>Frontier AI demands extreme resources, driving monopolization. Profits concentrate among a narrow group of AI infrastructure owners while smaller companies and poorer nations lose competitiveness.</p>
+      </div>
+      <div class="risk-card">
+        <div class="risk-num">6 — Accidents</div>
+        <h3>AI Reliability &amp; Critical Infrastructure Failures</h3>
+        <p>Deploying AI in transportation, healthcare, energy, and justice introduces catastrophic failure risks from hallucinations, flawed training data, and misspecified objectives.</p>
+      </div>
+    </div>
+
+    <h3 style="color: var(--muted); font-size: 0.82rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px;">Civilizational-Scale Harms</h3>
+    <div class="risk-grid">
+      <div class="risk-card">
+        <div class="risk-num">5 — X-Risk</div>
+        <h3>Loss of Control &amp; Existential Risk</h3>
+        <p>As AI approaches AGI, humanity may create systems whose goals cannot be aligned with human values. Should such a system resist shutdown, humanity could irreversibly lose control over its future.</p>
+      </div>
+      <div class="risk-card">
+        <div class="risk-num">7 — Warfare</div>
+        <h3>Autonomous Weapons &amp; AI-Driven Warfare</h3>
+        <p>Military AI advances toward autonomous weapons selecting targets without human intervention, raising moral dilemmas, a global AI arms race, and unintended conflict escalation.</p>
+      </div>
+      <div class="risk-card">
+        <div class="risk-num">10 — Science</div>
+        <h3>Automation of Science &amp; Uncontrolled Research</h3>
+        <p>AI agents formulating hypotheses and commissioning experiments may bypass ethical safeguards, producing dangerous research or flooding science with flawed studies.</p>
+      </div>
+    </div>
+    <p style="text-align: center; margin-top: 32px;">
+      <a href="https://drive.google.com/file/d/1aFc-IVP080m3i80ZYUPVNYd4qYbbG7v_/view?usp=drive_link" target="_blank" style="color: var(--accent); text-decoration: none; font-size: 0.92rem; font-weight: 500; border: 1px solid var(--border); padding: 10px 24px; border-radius: 8px; display: inline-block; transition: border-color 0.2s;">Read risk descriptions &rarr;</a>
+    </p>
+  </section>
+
+</div>
+
+<footer>
+  <div class="container">
+    <p>AI Seismograph &copy; 2026 &mdash; Updated quarterly (Jan 1, Apr 1, Jul 1, Oct 1)</p>
+    <p style="margin-top: 6px;">Questions? <a href="mailto:jan@ceskepriority.cz">jan@ceskepriority.cz</a> &nbsp;&middot;&nbsp; <a href="https://drive.google.com/file/d/104_NkFnIof6RhNm5QI0BrDzdi54Ska97/view?usp=drive_link" target="_blank" style="opacity: 0.7;">Ranking methodology</a></p>
+  </div>
+</footer>
+
+<script>
+// DATA
+const categories = ['disinfo','privacy','meaning','X-risks','science','accidents','warfare','jobs','inequality','democracy'];
+const labels = ['Disinfo','Privacy','Meaning','X-Risks','Science','Accidents','Warfare','Jobs','Inequality','Democracy'];
+
+const q1Scores = [33.78, 19.26, 13.18, 11.92, 7.39, 5.88, 3.18, 2.38, 1.83, 1.19];
+const q1Display = q1Scores.map(v => Math.round(v * 10) / 1);
+
+const q4Scores = [31.75, 15.25, 14.88, 10.53, 8.91, 5.78, 4.75, 3.87, 2.75, 1.54];
+const q4Display = q4Scores.map(v => Math.round(v * 10) / 1);
+
+const changes = q1Scores.map((v, i) => +(v - q4Scores[i]).toFixed(2));
+
+const changeSorted = labels.map((l, i) => ({ label: l, change: changes[i] }))
+  .sort((a, b) => b.change - a.change);
+
+// RANKING CHART
+const ctx1 = document.getElementById('rankingChart').getContext('2d');
+new Chart(ctx1, {
+  type: 'bar',
+  data: {
+    labels: labels,
+    datasets: [{
+      label: 'Q1 2026 Score (per 1000)',
+      data: q1Display,
+      backgroundColor: q1Display.map(v => v >= 100 ? 'rgba(79,140,255,0.7)' : 'rgba(79,140,255,0.35)'),
+      borderColor: 'rgba(79,140,255,0.9)',
+      borderWidth: 1,
+      borderRadius: 4,
+    }]
+  },
+  options: {
+    indexAxis: 'y',
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        callbacks: {
+          label: ctx => `Score: ${ctx.raw.toFixed(1)} / 1000`
+        }
+      }
+    },
+    scales: {
+      x: {
+        grid: { color: 'rgba(255,255,255,0.05)' },
+        ticks: { color: '#7a8ba8', font: { size: 12 } },
+        title: { display: true, text: 'Normalized Score (1000 total)', color: '#7a8ba8' }
+      },
+      y: {
+        grid: { display: false },
+        ticks: { color: '#e0e6f0', font: { size: 13, weight: 600 } }
+      }
+    }
+  }
+});
+
+// CHANGE CHART
+const ctx2 = document.getElementById('changeChart').getContext('2d');
+new Chart(ctx2, {
+  type: 'bar',
+  data: {
+    labels: changeSorted.map(d => d.label),
+    datasets: [{
+      label: 'Change (Q4\u2192Q1)',
+      data: changeSorted.map(d => d.change),
+      backgroundColor: changeSorted.map(d =>
+        d.change >= 1 ? 'rgba(52,211,153,0.6)' :
+        d.change <= -1 ? 'rgba(248,113,113,0.5)' :
+        'rgba(251,191,36,0.4)'
+      ),
+      borderColor: changeSorted.map(d =>
+        d.change >= 1 ? 'rgba(52,211,153,0.9)' :
+        d.change <= -1 ? 'rgba(248,113,113,0.8)' :
+        'rgba(251,191,36,0.7)'
+      ),
+      borderWidth: 1,
+      borderRadius: 4,
+    }]
+  },
+  options: {
+    indexAxis: 'y',
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        callbacks: {
+          label: ctx => {
+            const v = ctx.raw;
+            const res = v >= 1 ? 'YES' : 'NO';
+            return `Change: ${v >= 0 ? '+' : ''}${v.toFixed(2)} \u2192 ${res}`;
+          }
+        }
+      },
+      annotation: {}
+    },
+    scales: {
+      x: {
+        grid: { color: 'rgba(255,255,255,0.05)' },
+        ticks: { color: '#7a8ba8', font: { size: 12 } },
+        title: { display: true, text: 'Score Change (points)', color: '#7a8ba8' }
+      },
+      y: {
+        grid: { display: false },
+        ticks: { color: '#e0e6f0', font: { size: 13, weight: 600 } }
+      }
+    }
+  }
+});
+
+// RESOLUTION TABLE
+const tableData = [
+  { risk: 'Disinfo', q4: 31.75, q1: 33.78, change: 2.03, res: 'YES' },
+  { risk: 'Privacy', q4: 15.25, q1: 19.26, change: 4.01, res: 'YES' },
+  { risk: 'X-Risks', q4: 10.53, q1: 11.92, change: 1.39, res: 'YES' },
+  { risk: 'Accidents', q4: 5.78, q1: 5.88, change: 0.11, res: 'NO' },
+  { risk: 'Democracy', q4: 1.54, q1: 1.19, change: -0.35, res: 'NO' },
+  { risk: 'Inequality', q4: 2.75, q1: 1.83, change: -0.92, res: 'NO' },
+  { risk: 'Jobs', q4: 3.87, q1: 2.38, change: -1.48, res: 'NO' },
+  { risk: 'Science', q4: 8.91, q1: 7.39, change: -1.52, res: 'NO' },
+  { risk: 'Warfare', q4: 4.75, q1: 3.18, change: -1.57, res: 'NO' },
+  { risk: 'Meaning', q4: 14.88, q1: 13.18, change: -1.70, res: 'NO' },
+];
+
+const tbody = document.getElementById('resTableBody');
+tableData.forEach(d => {
+  const changeClass = d.change >= 1 ? 'change-pos' : d.change <= -1 ? 'change-neg' : 'change-flat';
+  const changeStr = (d.change >= 0 ? '+' : '') + d.change.toFixed(2);
+  const badge = d.res === 'YES' ? '<span class="badge-yes">YES</span>' : '<span class="badge-no">NO</span>';
+  tbody.innerHTML += `<tr>
+    <td style="font-weight:600">${d.risk}</td>
+    <td>${(d.q4 * 10).toFixed(1)}</td>
+    <td>${(d.q1 * 10).toFixed(1)}</td>
+    <td class="${changeClass}">${changeStr}</td>
+    <td>${badge}</td>
+  </tr>`;
+});
+</script>
+
+</body>
+</html>
