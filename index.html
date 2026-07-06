@@ -131,6 +131,49 @@
   .change-neg { color: var(--red); font-weight: 600; }
   .change-flat { color: var(--muted); }
 
+  /* PREVIOUS QUARTER DROPDOWN */
+  details.prev-quarter {
+    margin-top: 16px;
+  }
+  details.prev-quarter summary {
+    cursor: pointer;
+    color: var(--muted);
+    font-size: 0.9rem;
+    font-weight: 500;
+    padding: 12px 0;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: color 0.2s;
+  }
+  details.prev-quarter summary:hover { color: var(--text); }
+  details.prev-quarter summary::-webkit-details-marker { display: none; }
+  details.prev-quarter summary::before {
+    content: '\25B6';
+    font-size: 0.65rem;
+    transition: transform 0.2s;
+    display: inline-block;
+  }
+  details.prev-quarter[open] summary::before {
+    transform: rotate(90deg);
+  }
+  details.prev-quarter .prev-content {
+    padding-top: 16px;
+  }
+  details.prev-quarter .prev-content h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: var(--muted);
+  }
+  details.prev-quarter .prev-content .subtitle {
+    color: var(--muted);
+    margin-bottom: 24px;
+    font-size: 0.88rem;
+    opacity: 0.8;
+  }
+
   /* RISK CARDS */
   .risk-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
   .risk-card {
@@ -186,6 +229,49 @@
   nav .links a { color: var(--muted); text-decoration: none; font-size: 0.88rem; font-weight: 500; transition: color 0.2s; }
   nav .links a:hover { color: var(--text); }
 
+  /* INTRO TABLE */
+  .intro-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.92rem;
+  }
+  .intro-table td {
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: middle;
+  }
+  .intro-table tr:last-child td { border-bottom: none; }
+  .intro-table .q-label {
+    font-weight: 700;
+    color: var(--text);
+    white-space: nowrap;
+    width: 90px;
+  }
+  .intro-table .q-areas {
+    color: var(--muted);
+  }
+  .intro-table .q-areas .tag {
+    display: inline-block;
+    background: rgba(79,140,255,0.1);
+    color: var(--accent);
+    font-size: 0.82rem;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 6px;
+    margin: 2px 4px 2px 0;
+  }
+  .intro-table .q-areas a.tag {
+    text-decoration: none;
+    transition: background 0.2s;
+  }
+  .intro-table .q-areas a.tag:hover {
+    background: rgba(79,140,255,0.22);
+  }
+  .intro-table .q-areas .tag-future {
+    background: rgba(122,139,168,0.12);
+    color: var(--muted);
+  }
+
   @media (max-width: 640px) {
     nav .links { gap: 14px; }
     nav .links a { font-size: 0.8rem; }
@@ -209,15 +295,50 @@
 <div class="hero">
   <div class="hero-badge">Quarterly AI Risk Index</div>
   <h1>AI <span>Seismograph</span></h1>
-  <p>Tracking the relative salience of 10 AI risk categories through global search trends. Updated quarterly to power prediction markets.</p>
-  <div class="quarter-label">Latest quarter: <strong>Q1 2026</strong> &nbsp;|&nbsp; Baseline: Q4 2025</div>
+  <p>Tracking the relative salience of 10 AI risk categories through global search trends. Updated quarterly.</p>
+  <div class="quarter-label">Latest quarter: <strong>Q2 2026</strong> &nbsp;|&nbsp; Previous: Q1 2026</div>
 </div>
 
 <div class="container">
 
+  <!-- INTRO: HIGHEST GROWTH -->
+  <section>
+    <h2>Highest growth in global attention</h2>
+    <p class="subtitle">Risk categories that rose significantly (+1.0 points or more) each quarter.</p>
+    <div class="card">
+      <table class="intro-table">
+        <tr>
+          <td class="q-label">Q1 2026</td>
+          <td class="q-areas">
+            <a href="#risk-privacy" class="tag">Privacy</a>
+            <a href="#risk-disinfo" class="tag">Disinfo</a>
+            <a href="#risk-xrisk" class="tag">X-Risks</a>
+          </td>
+        </tr>
+        <tr>
+          <td class="q-label">Q2 2026</td>
+          <td class="q-areas">
+            <a href="#risk-science" class="tag">Science</a>
+            <a href="#risk-xrisk" class="tag">X-Risks</a>
+            <a href="#risk-inequality" class="tag">Inequality</a>
+            <a href="#risk-jobs" class="tag">Jobs</a>
+          </td>
+        </tr>
+        <tr>
+          <td class="q-label">Q3 2026</td>
+          <td class="q-areas">
+            <span class="tag tag-future">?</span>
+            <span class="tag tag-future">?</span>
+            <span class="tag tag-future">?</span>
+          </td>
+        </tr>
+      </table>
+    </div>
+  </section>
+
   <!-- CURRENT RANKING -->
   <section id="ranking">
-    <h2>Current Ranking — Q1 2026</h2>
+    <h2>Current Ranking — Q2 2026</h2>
     <p class="subtitle">Normalized scores out of 1,000 total points (average = 100). Higher score = more global search interest relative to other AI risks.</p>
     <div class="card">
       <div class="chart-wrap"><canvas id="rankingChart" height="380"></canvas></div>
@@ -227,7 +348,7 @@
   <!-- QUARTER CHANGES -->
   <section id="changes">
     <h2>Quarter-over-Quarter Changes</h2>
-    <p class="subtitle">Score changes from Q4 2025 (baseline) to Q1 2026. A rise of +1.0 or more resolves as YES on prediction markets.</p>
+    <p class="subtitle">Score changes from Q1 2026 to Q2 2026. A rise of +1.0 or more resolves as YES on prediction markets.</p>
     <div class="card">
       <div class="chart-wrap"><canvas id="changeChart" height="360"></canvas></div>
     </div>
@@ -239,8 +360,8 @@
           <thead>
             <tr>
               <th>Risk</th>
-              <th>Q4 2025</th>
               <th>Q1 2026</th>
+              <th>Q2 2026</th>
               <th>Change</th>
               <th>Resolution</th>
             </tr>
@@ -251,6 +372,42 @@
     </div>
   </section>
 
+  <!-- PREVIOUS QUARTER -->
+  <details class="prev-quarter">
+    <summary>Previous quarter: Q1 2026 (Q4 2025 &rarr; Q1 2026)</summary>
+    <div class="prev-content">
+
+      <h3>Ranking — Q1 2026</h3>
+      <div class="card">
+        <div class="chart-wrap"><canvas id="prevRankingChart" height="380"></canvas></div>
+      </div>
+
+      <h3>Changes (Q4 2025 &rarr; Q1 2026)</h3>
+      <div class="card">
+        <div class="chart-wrap"><canvas id="prevChangeChart" height="360"></canvas></div>
+      </div>
+
+      <div class="card">
+        <h3 style="font-size: 1.05rem; margin-bottom: 16px;">Resolution Table</h3>
+        <div style="overflow-x: auto;">
+          <table class="res-table">
+            <thead>
+              <tr>
+                <th>Risk</th>
+                <th>Q4 2025</th>
+                <th>Q1 2026</th>
+                <th>Change</th>
+                <th>Resolution</th>
+              </tr>
+            </thead>
+            <tbody id="prevResTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </details>
+
   <!-- RISK DESCRIPTIONS -->
   <section id="risks">
     <h2>Risk Categories</h2>
@@ -258,22 +415,22 @@
 
     <h3 style="color: var(--muted); font-size: 0.82rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px;">Individual Harms</h3>
     <div class="risk-grid" style="margin-bottom: 32px;">
-      <div class="risk-card">
+      <div class="risk-card" id="risk-disinfo">
         <div class="risk-num">1 — Disinfo</div>
         <h3>AI-Generated Disinformation &amp; Synthetic Media</h3>
         <p>AI enables mass production of deepfakes, voice clones, and generated text, eroding shared reality and societal trust. When people cannot distinguish truth from fabrication, the information ecosystem degrades.</p>
       </div>
-      <div class="risk-card">
+      <div class="risk-card" id="risk-jobs">
         <div class="risk-num">2 — Jobs</div>
         <h3>Labor Displacement &amp; Workforce Disruption</h3>
         <p>AI threatens professions from manual to creative work. The problem is unprecedented speed of change: individuals and institutions cannot adapt fast enough, risking mass structural unemployment.</p>
       </div>
-      <div class="risk-card">
+      <div class="risk-card" id="risk-privacy">
         <div class="risk-num">4 — Privacy</div>
         <h3>Privacy Erosion &amp; AI-Powered Mass Surveillance</h3>
         <p>Advanced AI analytics combined with biometrics enable unprecedented population-wide monitoring, wholesale loss of anonymity, and construction of social credit systems that suppress individual freedom.</p>
       </div>
-      <div class="risk-card">
+      <div class="risk-card" id="risk-meaning">
         <div class="risk-num">9 — Meaning</div>
         <h3>Mental Health, Relationships &amp; Crisis of Meaning</h3>
         <p>AI companions may deepen social isolation and atrophy human relationships. At an existential level, this challenges human motivation in a world where machines produce art, ideas, and work faster.</p>
@@ -282,17 +439,17 @@
 
     <h3 style="color: var(--muted); font-size: 0.82rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px;">Societal Harms</h3>
     <div class="risk-grid" style="margin-bottom: 32px;">
-      <div class="risk-card">
+      <div class="risk-card" id="risk-democracy">
         <div class="risk-num">3 — Democracy</div>
         <h3>Political Manipulation &amp; Threats to Democracy</h3>
         <p>Systematic exploitation of AI for voter micro-targeting and radicalization. AI analyzes psychological profiles to deliver content that traps people in filter bubbles and manipulates elections.</p>
       </div>
-      <div class="risk-card">
+      <div class="risk-card" id="risk-inequality">
         <div class="risk-num">8 — Inequality</div>
         <h3>Concentration of Wealth &amp; Economic Power</h3>
         <p>Frontier AI demands extreme resources, driving monopolization. Profits concentrate among a narrow group of AI infrastructure owners while smaller companies and poorer nations lose competitiveness.</p>
       </div>
-      <div class="risk-card">
+      <div class="risk-card" id="risk-accidents">
         <div class="risk-num">6 — Accidents</div>
         <h3>AI Reliability &amp; Critical Infrastructure Failures</h3>
         <p>Deploying AI in transportation, healthcare, energy, and justice introduces catastrophic failure risks from hallucinations, flawed training data, and misspecified objectives.</p>
@@ -301,17 +458,17 @@
 
     <h3 style="color: var(--muted); font-size: 0.82rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px;">Civilizational-Scale Harms</h3>
     <div class="risk-grid">
-      <div class="risk-card">
+      <div class="risk-card" id="risk-xrisk">
         <div class="risk-num">5 — X-Risk</div>
         <h3>Loss of Control &amp; Existential Risk</h3>
         <p>As AI approaches AGI, humanity may create systems whose goals cannot be aligned with human values. Should such a system resist shutdown, humanity could irreversibly lose control over its future.</p>
       </div>
-      <div class="risk-card">
+      <div class="risk-card" id="risk-warfare">
         <div class="risk-num">7 — Warfare</div>
         <h3>Autonomous Weapons &amp; AI-Driven Warfare</h3>
         <p>Military AI advances toward autonomous weapons selecting targets without human intervention, raising moral dilemmas, a global AI arms race, and unintended conflict escalation.</p>
       </div>
-      <div class="risk-card">
+      <div class="risk-card" id="risk-science">
         <div class="risk-num">10 — Science</div>
         <h3>Automation of Science &amp; Uncontrolled Research</h3>
         <p>AI agents formulating hypotheses and commissioning experiments may bypass ethical safeguards, producing dangerous research or flooding science with flawed studies.</p>
@@ -332,18 +489,22 @@
 </footer>
 
 <script>
-// DATA
-const categories = ['disinfo','privacy','meaning','X-risks','science','accidents','warfare','jobs','inequality','democracy'];
-const labels = ['Disinfo','Privacy','Meaning','X-Risks','Science','Accidents','Warfare','Jobs','Inequality','Democracy'];
+// DATA — Q2 2026
+// Order: disinfo, privacy, X-risks, meaning, science, accidents, jobs, inequality, warfare, democracy (sorted by Q2 score desc)
+const labels = ['Disinfo','Privacy','X-Risks','Meaning','Science','Accidents','Jobs','Inequality','Warfare','Democracy'];
 
-const q1Scores = [33.78, 19.26, 13.18, 11.92, 7.39, 5.88, 3.18, 2.38, 1.83, 1.19];
+// Q2 2026 scores (Previous + Change)
+const q2Scores = [28.06, 18.11, 14.61, 11.79, 10.76, 6.31, 3.94, 3.46, 2.56, 0.52];
+const q2Display = q2Scores.map(v => Math.round(v * 10) / 1);
+
+// Q1 2026 scores (previous quarter, same sort order)
+const q1Scores = [33.80, 19.30, 11.90, 13.20, 7.40, 5.90, 2.40, 1.80, 3.20, 1.20];
 const q1Display = q1Scores.map(v => Math.round(v * 10) / 1);
 
-const q4Scores = [31.75, 15.25, 14.88, 10.53, 8.91, 5.78, 4.75, 3.87, 2.75, 1.54];
-const q4Display = q4Scores.map(v => Math.round(v * 10) / 1);
+// Changes
+const changes = q2Scores.map((v, i) => +(v - q1Scores[i]).toFixed(2));
 
-const changes = q1Scores.map((v, i) => +(v - q4Scores[i]).toFixed(2));
-
+// Sorted by change for the change chart
 const changeSorted = labels.map((l, i) => ({ label: l, change: changes[i] }))
   .sort((a, b) => b.change - a.change);
 
@@ -354,9 +515,9 @@ new Chart(ctx1, {
   data: {
     labels: labels,
     datasets: [{
-      label: 'Q1 2026 Score (per 1000)',
-      data: q1Display,
-      backgroundColor: q1Display.map(v => v >= 100 ? 'rgba(79,140,255,0.7)' : 'rgba(79,140,255,0.35)'),
+      label: 'Q2 2026 Score (per 1000)',
+      data: q2Display,
+      backgroundColor: q2Display.map(v => v >= 100 ? 'rgba(79,140,255,0.7)' : 'rgba(79,140,255,0.35)'),
       borderColor: 'rgba(79,140,255,0.9)',
       borderWidth: 1,
       borderRadius: 4,
@@ -395,7 +556,7 @@ new Chart(ctx2, {
   data: {
     labels: changeSorted.map(d => d.label),
     datasets: [{
-      label: 'Change (Q4\u2192Q1)',
+      label: 'Change (Q1→Q2)',
       data: changeSorted.map(d => d.change),
       backgroundColor: changeSorted.map(d =>
         d.change >= 1 ? 'rgba(52,211,153,0.6)' :
@@ -422,7 +583,7 @@ new Chart(ctx2, {
           label: ctx => {
             const v = ctx.raw;
             const res = v >= 1 ? 'YES' : 'NO';
-            return `Change: ${v >= 0 ? '+' : ''}${v.toFixed(2)} \u2192 ${res}`;
+            return `Change: ${v >= 0 ? '+' : ''}${v.toFixed(2)} → ${res}`;
           }
         }
       },
@@ -442,18 +603,18 @@ new Chart(ctx2, {
   }
 });
 
-// RESOLUTION TABLE
+// RESOLUTION TABLE (sorted by change descending)
 const tableData = [
-  { risk: 'Disinfo', q4: 31.75, q1: 33.78, change: 2.03, res: 'YES' },
-  { risk: 'Privacy', q4: 15.25, q1: 19.26, change: 4.01, res: 'YES' },
-  { risk: 'X-Risks', q4: 10.53, q1: 11.92, change: 1.39, res: 'YES' },
-  { risk: 'Accidents', q4: 5.78, q1: 5.88, change: 0.11, res: 'NO' },
-  { risk: 'Democracy', q4: 1.54, q1: 1.19, change: -0.35, res: 'NO' },
-  { risk: 'Inequality', q4: 2.75, q1: 1.83, change: -0.92, res: 'NO' },
-  { risk: 'Jobs', q4: 3.87, q1: 2.38, change: -1.48, res: 'NO' },
-  { risk: 'Science', q4: 8.91, q1: 7.39, change: -1.52, res: 'NO' },
-  { risk: 'Warfare', q4: 4.75, q1: 3.18, change: -1.57, res: 'NO' },
-  { risk: 'Meaning', q4: 14.88, q1: 13.18, change: -1.70, res: 'NO' },
+  { risk: 'Science',    q1: 7.40,  q2: 10.76, change: 3.36,  res: 'YES' },
+  { risk: 'X-Risks',    q1: 11.90, q2: 14.61, change: 2.71,  res: 'YES' },
+  { risk: 'Inequality', q1: 1.80,  q2: 3.46,  change: 1.66,  res: 'YES' },
+  { risk: 'Jobs',       q1: 2.40,  q2: 3.94,  change: 1.54,  res: 'YES' },
+  { risk: 'Accidents',  q1: 5.90,  q2: 6.31,  change: 0.41,  res: 'NO' },
+  { risk: 'Warfare',    q1: 3.20,  q2: 2.56,  change: -0.64, res: 'NO' },
+  { risk: 'Democracy',  q1: 1.20,  q2: 0.52,  change: -0.68, res: 'NO' },
+  { risk: 'Privacy',    q1: 19.30, q2: 18.11, change: -1.19, res: 'NO' },
+  { risk: 'Meaning',    q1: 13.20, q2: 11.79, change: -1.41, res: 'NO' },
+  { risk: 'Disinfo',    q1: 33.80, q2: 28.06, change: -5.74, res: 'NO' },
 ];
 
 const tbody = document.getElementById('resTableBody');
@@ -463,11 +624,93 @@ tableData.forEach(d => {
   const badge = d.res === 'YES' ? '<span class="badge-yes">YES</span>' : '<span class="badge-no">NO</span>';
   tbody.innerHTML += `<tr>
     <td style="font-weight:600">${d.risk}</td>
-    <td>${(d.q4 * 10).toFixed(1)}</td>
     <td>${(d.q1 * 10).toFixed(1)}</td>
+    <td>${(d.q2 * 10).toFixed(1)}</td>
     <td class="${changeClass}">${changeStr}</td>
     <td>${badge}</td>
   </tr>`;
+});
+
+// ===== PREVIOUS QUARTER: Q1 2026 (Q4 2025 → Q1 2026) =====
+const prevLabels = ['Disinfo','Privacy','Meaning','X-Risks','Science','Accidents','Warfare','Jobs','Inequality','Democracy'];
+const prevQ1Scores = [33.78, 19.26, 13.18, 11.92, 7.39, 5.88, 3.18, 2.38, 1.83, 1.19];
+const prevQ4Scores = [31.75, 15.25, 14.88, 10.53, 8.91, 5.78, 4.75, 3.87, 2.75, 1.54];
+const prevChanges = prevQ1Scores.map((v, i) => +(v - prevQ4Scores[i]).toFixed(2));
+const prevChangeSorted = prevLabels.map((l, i) => ({ label: l, change: prevChanges[i] }))
+  .sort((a, b) => b.change - a.change);
+
+let prevChartsRendered = false;
+document.querySelector('details.prev-quarter').addEventListener('toggle', function() {
+  if (this.open && !prevChartsRendered) {
+    prevChartsRendered = true;
+
+    // Previous ranking chart
+    new Chart(document.getElementById('prevRankingChart').getContext('2d'), {
+      type: 'bar',
+      data: {
+        labels: prevLabels,
+        datasets: [{
+          label: 'Q1 2026 Score (per 1000)',
+          data: prevQ1Scores.map(v => Math.round(v * 10)),
+          backgroundColor: prevQ1Scores.map(v => v * 10 >= 100 ? 'rgba(79,140,255,0.7)' : 'rgba(79,140,255,0.35)'),
+          borderColor: 'rgba(79,140,255,0.9)',
+          borderWidth: 1, borderRadius: 4,
+        }]
+      },
+      options: {
+        indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => `Score: ${ctx.raw.toFixed(1)} / 1000` } } },
+        scales: {
+          x: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#7a8ba8' }, title: { display: true, text: 'Normalized Score (1000 total)', color: '#7a8ba8' } },
+          y: { grid: { display: false }, ticks: { color: '#e0e6f0', font: { size: 13, weight: 600 } } }
+        }
+      }
+    });
+
+    // Previous change chart
+    new Chart(document.getElementById('prevChangeChart').getContext('2d'), {
+      type: 'bar',
+      data: {
+        labels: prevChangeSorted.map(d => d.label),
+        datasets: [{
+          label: 'Change (Q4→Q1)',
+          data: prevChangeSorted.map(d => d.change),
+          backgroundColor: prevChangeSorted.map(d => d.change >= 1 ? 'rgba(52,211,153,0.6)' : d.change <= -1 ? 'rgba(248,113,113,0.5)' : 'rgba(251,191,36,0.4)'),
+          borderColor: prevChangeSorted.map(d => d.change >= 1 ? 'rgba(52,211,153,0.9)' : d.change <= -1 ? 'rgba(248,113,113,0.8)' : 'rgba(251,191,36,0.7)'),
+          borderWidth: 1, borderRadius: 4,
+        }]
+      },
+      options: {
+        indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => { const v = ctx.raw; return `Change: ${v >= 0 ? '+' : ''}${v.toFixed(2)} → ${v >= 1 ? 'YES' : 'NO'}`; } } } },
+        scales: {
+          x: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#7a8ba8' }, title: { display: true, text: 'Score Change (points)', color: '#7a8ba8' } },
+          y: { grid: { display: false }, ticks: { color: '#e0e6f0', font: { size: 13, weight: 600 } } }
+        }
+      }
+    });
+  }
+});
+
+// Previous resolution table
+const prevTableData = [
+  { risk: 'Privacy',    prev: 15.25, cur: 19.26, change: 4.01,  res: 'YES' },
+  { risk: 'Disinfo',    prev: 31.75, cur: 33.78, change: 2.03,  res: 'YES' },
+  { risk: 'X-Risks',    prev: 10.53, cur: 11.92, change: 1.39,  res: 'YES' },
+  { risk: 'Accidents',  prev: 5.78,  cur: 5.88,  change: 0.11,  res: 'NO' },
+  { risk: 'Democracy',  prev: 1.54,  cur: 1.19,  change: -0.35, res: 'NO' },
+  { risk: 'Inequality', prev: 2.75,  cur: 1.83,  change: -0.92, res: 'NO' },
+  { risk: 'Jobs',       prev: 3.87,  cur: 2.38,  change: -1.48, res: 'NO' },
+  { risk: 'Science',    prev: 8.91,  cur: 7.39,  change: -1.52, res: 'NO' },
+  { risk: 'Warfare',    prev: 4.75,  cur: 3.18,  change: -1.57, res: 'NO' },
+  { risk: 'Meaning',    prev: 14.88, cur: 13.18, change: -1.70, res: 'NO' },
+];
+const prevTbody = document.getElementById('prevResTableBody');
+prevTableData.forEach(d => {
+  const cls = d.change >= 1 ? 'change-pos' : d.change <= -1 ? 'change-neg' : 'change-flat';
+  const str = (d.change >= 0 ? '+' : '') + d.change.toFixed(2);
+  const badge = d.res === 'YES' ? '<span class="badge-yes">YES</span>' : '<span class="badge-no">NO</span>';
+  prevTbody.innerHTML += `<tr><td style="font-weight:600">${d.risk}</td><td>${(d.prev*10).toFixed(1)}</td><td>${(d.cur*10).toFixed(1)}</td><td class="${cls}">${str}</td><td>${badge}</td></tr>`;
 });
 </script>
 
