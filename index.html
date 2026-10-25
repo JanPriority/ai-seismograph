@@ -326,6 +326,13 @@
         <tr>
           <td class="q-label">Q3 2026</td>
           <td class="q-areas">
+            <a href="#risk-science" class="tag">Science</a>
+            <a href="#risk-xrisk" class="tag">X-Risks</a>
+          </td>
+        </tr>
+        <tr>
+          <td class="q-label">Q4 2026</td>
+          <td class="q-areas">
             <span class="tag tag-future">?</span>
             <span class="tag tag-future">?</span>
             <span class="tag tag-future">?</span>
@@ -337,7 +344,7 @@
 
   <!-- CURRENT RANKING -->
   <section id="ranking">
-    <h2>Current Ranking — Q2 2026</h2>
+    <h2>Current Ranking — Q3 2026</h2>
     <p class="subtitle">Normalized scores out of 1,000 total points (average = 100). Higher score = more global search interest relative to other AI risks.</p>
     <div class="card">
       <div class="chart-wrap"><canvas id="rankingChart" height="380"></canvas></div>
@@ -347,7 +354,7 @@
   <!-- QUARTER CHANGES -->
   <section id="changes">
     <h2>Quarter-over-Quarter Changes</h2>
-    <p class="subtitle">Score changes from Q1 2026 to Q2 2026. A rise of +1.0 or more resolves as YES on prediction markets.</p>
+    <p class="subtitle">Score changes from Q2 2026 to Q3 2026. A rise of +1.0 or more resolves as YES on prediction markets.</p>
     <div class="card">
       <div class="chart-wrap"><canvas id="changeChart" height="360"></canvas></div>
     </div>
@@ -359,8 +366,8 @@
           <thead>
             <tr>
               <th>Risk</th>
-              <th>Q1 2026</th>
               <th>Q2 2026</th>
+              <th>Q3 2026</th>
               <th>Change</th>
               <th>Resolution</th>
             </tr>
@@ -371,19 +378,55 @@
     </div>
   </section>
 
-  <!-- PREVIOUS QUARTER -->
-  <details class="prev-quarter">
+  <!-- PREVIOUS QUARTER: Q2 2026 -->
+  <details class="prev-quarter" id="prev-q2">
+    <summary>Previous quarter: Q2 2026 (Q1 2026 &rarr; Q2 2026)</summary>
+    <div class="prev-content">
+
+      <h3>Ranking — Q2 2026</h3>
+      <div class="card">
+        <div class="chart-wrap"><canvas id="prevRankingChart" height="380"></canvas></div>
+      </div>
+
+      <h3>Changes (Q1 2026 &rarr; Q2 2026)</h3>
+      <div class="card">
+        <div class="chart-wrap"><canvas id="prevChangeChart" height="360"></canvas></div>
+      </div>
+
+      <div class="card">
+        <h3 style="font-size: 1.05rem; margin-bottom: 16px;">Resolution Table</h3>
+        <div style="overflow-x: auto;">
+          <table class="res-table">
+            <thead>
+              <tr>
+                <th>Risk</th>
+                <th>Q1 2026</th>
+                <th>Q2 2026</th>
+                <th>Change</th>
+                <th>Resolution</th>
+              </tr>
+            </thead>
+            <tbody id="prevResTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </details>
+
+  <!-- PREVIOUS QUARTER: Q1 2026 -->
+  <details class="prev-quarter" id="prev-q1">
     <summary>Previous quarter: Q1 2026 (Q4 2025 &rarr; Q1 2026)</summary>
     <div class="prev-content">
 
       <h3>Ranking — Q1 2026</h3>
       <div class="card">
-        <div class="chart-wrap"><canvas id="prevRankingChart" height="380"></canvas></div>
+        <div class="chart-wrap"><canvas id="prev2RankingChart" height="380"></canvas></div>
       </div>
 
       <h3>Changes (Q4 2025 &rarr; Q1 2026)</h3>
       <div class="card">
-        <div class="chart-wrap"><canvas id="prevChangeChart" height="360"></canvas></div>
+        <div class="chart-wrap"><canvas id="prev2ChangeChart" height="360"></canvas></div>
       </div>
 
       <div class="card">
@@ -399,7 +442,7 @@
                 <th>Resolution</th>
               </tr>
             </thead>
-            <tbody id="prevResTableBody"></tbody>
+            <tbody id="prev2ResTableBody"></tbody>
           </table>
         </div>
       </div>
@@ -488,20 +531,19 @@
 </footer>
 
 <script>
-// DATA — Q2 2026
-// Order: disinfo, privacy, X-risks, meaning, science, accidents, jobs, inequality, warfare, democracy (sorted by Q2 score desc)
-const labels = ['Disinfo','Privacy','X-Risks','Meaning','Science','Accidents','Jobs','Inequality','Warfare','Democracy'];
+// ===== DATA — Q3 2026 (current) =====
+// Sorted by Q3 score descending
+const labels = ['Disinfo','Privacy','X-Risks','Science','Meaning','Accidents','Inequality','Jobs','Warfare','Democracy'];
 
-// Q2 2026 scores (Previous + Change)
-const q2Scores = [28.06, 18.11, 14.61, 11.79, 10.76, 6.31, 3.94, 3.46, 2.56, 0.52];
+const q3Scores = [28.57, 17.42, 16.53, 14.98, 9.30, 4.91, 4.43, 2.32, 1.55, 0.00];
+const q3Display = q3Scores.map(v => Math.round(v * 10) / 1);
+
+// Q2 2026 scores (previous quarter, same sort order as labels)
+const q2Scores = [28.03, 18.07, 14.63, 10.75, 11.77, 6.29, 3.49, 3.92, 2.54, 0.51];
 const q2Display = q2Scores.map(v => Math.round(v * 10) / 1);
 
-// Q1 2026 scores (previous quarter, same sort order)
-const q1Scores = [33.80, 19.30, 11.90, 13.20, 7.40, 5.90, 2.40, 1.80, 3.20, 1.20];
-const q1Display = q1Scores.map(v => Math.round(v * 10) / 1);
-
 // Changes
-const changes = q2Scores.map((v, i) => +(v - q1Scores[i]).toFixed(2));
+const changes = q3Scores.map((v, i) => +(v - q2Scores[i]).toFixed(2));
 
 // Sorted by change for the change chart
 const changeSorted = labels.map((l, i) => ({ label: l, change: changes[i] }))
@@ -514,9 +556,9 @@ new Chart(ctx1, {
   data: {
     labels: labels,
     datasets: [{
-      label: 'Q2 2026 Score (per 1000)',
-      data: q2Display,
-      backgroundColor: q2Display.map(v => v >= 100 ? 'rgba(79,140,255,0.7)' : 'rgba(79,140,255,0.35)'),
+      label: 'Q3 2026 Score (per 1000)',
+      data: q3Display,
+      backgroundColor: q3Display.map(v => v >= 100 ? 'rgba(79,140,255,0.7)' : 'rgba(79,140,255,0.35)'),
       borderColor: 'rgba(79,140,255,0.9)',
       borderWidth: 1,
       borderRadius: 4,
@@ -555,7 +597,7 @@ new Chart(ctx2, {
   data: {
     labels: changeSorted.map(d => d.label),
     datasets: [{
-      label: 'Change (Q1→Q2)',
+      label: 'Change (Q2→Q3)',
       data: changeSorted.map(d => d.change),
       backgroundColor: changeSorted.map(d =>
         d.change >= 1 ? 'rgba(52,211,153,0.6)' :
@@ -604,16 +646,16 @@ new Chart(ctx2, {
 
 // RESOLUTION TABLE (sorted by change descending)
 const tableData = [
-  { risk: 'Science',    q1: 7.40,  q2: 10.76, change: 3.36,  res: 'YES' },
-  { risk: 'X-Risks',    q1: 11.90, q2: 14.61, change: 2.71,  res: 'YES' },
-  { risk: 'Inequality', q1: 1.80,  q2: 3.46,  change: 1.66,  res: 'YES' },
-  { risk: 'Jobs',       q1: 2.40,  q2: 3.94,  change: 1.54,  res: 'YES' },
-  { risk: 'Accidents',  q1: 5.90,  q2: 6.31,  change: 0.41,  res: 'NO' },
-  { risk: 'Warfare',    q1: 3.20,  q2: 2.56,  change: -0.64, res: 'NO' },
-  { risk: 'Democracy',  q1: 1.20,  q2: 0.52,  change: -0.68, res: 'NO' },
-  { risk: 'Privacy',    q1: 19.30, q2: 18.11, change: -1.19, res: 'NO' },
-  { risk: 'Meaning',    q1: 13.20, q2: 11.79, change: -1.41, res: 'NO' },
-  { risk: 'Disinfo',    q1: 33.80, q2: 28.06, change: -5.74, res: 'NO' },
+  { risk: 'Science',    q2: 10.75, q3: 14.98, change: 4.23,  res: 'YES' },
+  { risk: 'X-Risks',    q2: 14.63, q3: 16.53, change: 1.90,  res: 'YES' },
+  { risk: 'Inequality', q2: 3.49,  q3: 4.43,  change: 0.94,  res: 'NO' },
+  { risk: 'Disinfo',    q2: 28.03, q3: 28.57, change: 0.53,  res: 'NO' },
+  { risk: 'Democracy',  q2: 0.51,  q3: 0.00,  change: -0.51, res: 'NO' },
+  { risk: 'Privacy',    q2: 18.07, q3: 17.42, change: -0.66, res: 'NO' },
+  { risk: 'Warfare',    q2: 2.54,  q3: 1.55,  change: -0.99, res: 'NO' },
+  { risk: 'Accidents',  q2: 6.29,  q3: 4.91,  change: -1.38, res: 'NO' },
+  { risk: 'Jobs',       q2: 3.92,  q3: 2.32,  change: -1.60, res: 'NO' },
+  { risk: 'Meaning',    q2: 11.77, q3: 9.30,  change: -2.47, res: 'NO' },
 ];
 
 const tbody = document.getElementById('resTableBody');
@@ -623,35 +665,34 @@ tableData.forEach(d => {
   const badge = d.res === 'YES' ? '<span class="badge-yes">YES</span>' : '<span class="badge-no">NO</span>';
   tbody.innerHTML += `<tr>
     <td style="font-weight:600">${d.risk}</td>
-    <td>${(d.q1 * 10).toFixed(1)}</td>
     <td>${(d.q2 * 10).toFixed(1)}</td>
+    <td>${(d.q3 * 10).toFixed(1)}</td>
     <td class="${changeClass}">${changeStr}</td>
     <td>${badge}</td>
   </tr>`;
 });
 
-// ===== PREVIOUS QUARTER: Q1 2026 (Q4 2025 → Q1 2026) =====
-const prevLabels = ['Disinfo','Privacy','Meaning','X-Risks','Science','Accidents','Warfare','Jobs','Inequality','Democracy'];
-const prevQ1Scores = [33.78, 19.26, 13.18, 11.92, 7.39, 5.88, 3.18, 2.38, 1.83, 1.19];
-const prevQ4Scores = [31.75, 15.25, 14.88, 10.53, 8.91, 5.78, 4.75, 3.87, 2.75, 1.54];
-const prevChanges = prevQ1Scores.map((v, i) => +(v - prevQ4Scores[i]).toFixed(2));
+// ===== PREVIOUS QUARTER: Q2 2026 (Q1 → Q2) =====
+const prevLabels = ['Disinfo','Privacy','X-Risks','Meaning','Science','Accidents','Jobs','Inequality','Warfare','Democracy'];
+const prevQ2Scores = [28.06, 18.11, 14.61, 11.79, 10.76, 6.31, 3.94, 3.46, 2.56, 0.52];
+const prevQ1Scores = [33.80, 19.30, 11.90, 13.20, 7.40, 5.90, 2.40, 1.80, 3.20, 1.20];
+const prevChanges = prevQ2Scores.map((v, i) => +(v - prevQ1Scores[i]).toFixed(2));
 const prevChangeSorted = prevLabels.map((l, i) => ({ label: l, change: prevChanges[i] }))
   .sort((a, b) => b.change - a.change);
 
 let prevChartsRendered = false;
-document.querySelector('details.prev-quarter').addEventListener('toggle', function() {
+document.getElementById('prev-q2').addEventListener('toggle', function() {
   if (this.open && !prevChartsRendered) {
     prevChartsRendered = true;
 
-    // Previous ranking chart
     new Chart(document.getElementById('prevRankingChart').getContext('2d'), {
       type: 'bar',
       data: {
         labels: prevLabels,
         datasets: [{
-          label: 'Q1 2026 Score (per 1000)',
-          data: prevQ1Scores.map(v => Math.round(v * 10)),
-          backgroundColor: prevQ1Scores.map(v => v * 10 >= 100 ? 'rgba(79,140,255,0.7)' : 'rgba(79,140,255,0.35)'),
+          label: 'Q2 2026 Score (per 1000)',
+          data: prevQ2Scores.map(v => Math.round(v * 10)),
+          backgroundColor: prevQ2Scores.map(v => v * 10 >= 100 ? 'rgba(79,140,255,0.7)' : 'rgba(79,140,255,0.35)'),
           borderColor: 'rgba(79,140,255,0.9)',
           borderWidth: 1, borderRadius: 4,
         }]
@@ -666,13 +707,12 @@ document.querySelector('details.prev-quarter').addEventListener('toggle', functi
       }
     });
 
-    // Previous change chart
     new Chart(document.getElementById('prevChangeChart').getContext('2d'), {
       type: 'bar',
       data: {
         labels: prevChangeSorted.map(d => d.label),
         datasets: [{
-          label: 'Change (Q4→Q1)',
+          label: 'Change (Q1→Q2)',
           data: prevChangeSorted.map(d => d.change),
           backgroundColor: prevChangeSorted.map(d => d.change >= 1 ? 'rgba(52,211,153,0.6)' : d.change <= -1 ? 'rgba(248,113,113,0.5)' : 'rgba(251,191,36,0.4)'),
           borderColor: prevChangeSorted.map(d => d.change >= 1 ? 'rgba(52,211,153,0.9)' : d.change <= -1 ? 'rgba(248,113,113,0.8)' : 'rgba(251,191,36,0.7)'),
@@ -691,8 +731,88 @@ document.querySelector('details.prev-quarter').addEventListener('toggle', functi
   }
 });
 
-// Previous resolution table
+// Q2 resolution table
 const prevTableData = [
+  { risk: 'Science',    q1: 7.40,  q2: 10.76, change: 3.36,  res: 'YES' },
+  { risk: 'X-Risks',    q1: 11.90, q2: 14.61, change: 2.71,  res: 'YES' },
+  { risk: 'Inequality', q1: 1.80,  q2: 3.46,  change: 1.66,  res: 'YES' },
+  { risk: 'Jobs',       q1: 2.40,  q2: 3.94,  change: 1.54,  res: 'YES' },
+  { risk: 'Accidents',  q1: 5.90,  q2: 6.31,  change: 0.41,  res: 'NO' },
+  { risk: 'Warfare',    q1: 3.20,  q2: 2.56,  change: -0.64, res: 'NO' },
+  { risk: 'Democracy',  q1: 1.20,  q2: 0.52,  change: -0.68, res: 'NO' },
+  { risk: 'Privacy',    q1: 19.30, q2: 18.11, change: -1.19, res: 'NO' },
+  { risk: 'Meaning',    q1: 13.20, q2: 11.79, change: -1.41, res: 'NO' },
+  { risk: 'Disinfo',    q1: 33.80, q2: 28.06, change: -5.74, res: 'NO' },
+];
+const prevTbody = document.getElementById('prevResTableBody');
+prevTableData.forEach(d => {
+  const cls = d.change >= 1 ? 'change-pos' : d.change <= -1 ? 'change-neg' : 'change-flat';
+  const str = (d.change >= 0 ? '+' : '') + d.change.toFixed(2);
+  const badge = d.res === 'YES' ? '<span class="badge-yes">YES</span>' : '<span class="badge-no">NO</span>';
+  prevTbody.innerHTML += `<tr><td style="font-weight:600">${d.risk}</td><td>${(d.q1*10).toFixed(1)}</td><td>${(d.q2*10).toFixed(1)}</td><td class="${cls}">${str}</td><td>${badge}</td></tr>`;
+});
+
+// ===== PREVIOUS QUARTER: Q1 2026 (Q4 2025 → Q1 2026) =====
+const prev2Labels = ['Disinfo','Privacy','Meaning','X-Risks','Science','Accidents','Warfare','Jobs','Inequality','Democracy'];
+const prev2Q1Scores = [33.78, 19.26, 13.18, 11.92, 7.39, 5.88, 3.18, 2.38, 1.83, 1.19];
+const prev2Q4Scores = [31.75, 15.25, 14.88, 10.53, 8.91, 5.78, 4.75, 3.87, 2.75, 1.54];
+const prev2Changes = prev2Q1Scores.map((v, i) => +(v - prev2Q4Scores[i]).toFixed(2));
+const prev2ChangeSorted = prev2Labels.map((l, i) => ({ label: l, change: prev2Changes[i] }))
+  .sort((a, b) => b.change - a.change);
+
+let prev2ChartsRendered = false;
+document.getElementById('prev-q1').addEventListener('toggle', function() {
+  if (this.open && !prev2ChartsRendered) {
+    prev2ChartsRendered = true;
+
+    new Chart(document.getElementById('prev2RankingChart').getContext('2d'), {
+      type: 'bar',
+      data: {
+        labels: prev2Labels,
+        datasets: [{
+          label: 'Q1 2026 Score (per 1000)',
+          data: prev2Q1Scores.map(v => Math.round(v * 10)),
+          backgroundColor: prev2Q1Scores.map(v => v * 10 >= 100 ? 'rgba(79,140,255,0.7)' : 'rgba(79,140,255,0.35)'),
+          borderColor: 'rgba(79,140,255,0.9)',
+          borderWidth: 1, borderRadius: 4,
+        }]
+      },
+      options: {
+        indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => `Score: ${ctx.raw.toFixed(1)} / 1000` } } },
+        scales: {
+          x: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#7a8ba8' }, title: { display: true, text: 'Normalized Score (1000 total)', color: '#7a8ba8' } },
+          y: { grid: { display: false }, ticks: { color: '#e0e6f0', font: { size: 13, weight: 600 } } }
+        }
+      }
+    });
+
+    new Chart(document.getElementById('prev2ChangeChart').getContext('2d'), {
+      type: 'bar',
+      data: {
+        labels: prev2ChangeSorted.map(d => d.label),
+        datasets: [{
+          label: 'Change (Q4→Q1)',
+          data: prev2ChangeSorted.map(d => d.change),
+          backgroundColor: prev2ChangeSorted.map(d => d.change >= 1 ? 'rgba(52,211,153,0.6)' : d.change <= -1 ? 'rgba(248,113,113,0.5)' : 'rgba(251,191,36,0.4)'),
+          borderColor: prev2ChangeSorted.map(d => d.change >= 1 ? 'rgba(52,211,153,0.9)' : d.change <= -1 ? 'rgba(248,113,113,0.8)' : 'rgba(251,191,36,0.7)'),
+          borderWidth: 1, borderRadius: 4,
+        }]
+      },
+      options: {
+        indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => { const v = ctx.raw; return `Change: ${v >= 0 ? '+' : ''}${v.toFixed(2)} → ${v >= 1 ? 'YES' : 'NO'}`; } } } },
+        scales: {
+          x: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#7a8ba8' }, title: { display: true, text: 'Score Change (points)', color: '#7a8ba8' } },
+          y: { grid: { display: false }, ticks: { color: '#e0e6f0', font: { size: 13, weight: 600 } } }
+        }
+      }
+    });
+  }
+});
+
+// Q1 resolution table
+const prev2TableData = [
   { risk: 'Privacy',    prev: 15.25, cur: 19.26, change: 4.01,  res: 'YES' },
   { risk: 'Disinfo',    prev: 31.75, cur: 33.78, change: 2.03,  res: 'YES' },
   { risk: 'X-Risks',    prev: 10.53, cur: 11.92, change: 1.39,  res: 'YES' },
@@ -704,12 +824,12 @@ const prevTableData = [
   { risk: 'Warfare',    prev: 4.75,  cur: 3.18,  change: -1.57, res: 'NO' },
   { risk: 'Meaning',    prev: 14.88, cur: 13.18, change: -1.70, res: 'NO' },
 ];
-const prevTbody = document.getElementById('prevResTableBody');
-prevTableData.forEach(d => {
+const prev2Tbody = document.getElementById('prev2ResTableBody');
+prev2TableData.forEach(d => {
   const cls = d.change >= 1 ? 'change-pos' : d.change <= -1 ? 'change-neg' : 'change-flat';
   const str = (d.change >= 0 ? '+' : '') + d.change.toFixed(2);
   const badge = d.res === 'YES' ? '<span class="badge-yes">YES</span>' : '<span class="badge-no">NO</span>';
-  prevTbody.innerHTML += `<tr><td style="font-weight:600">${d.risk}</td><td>${(d.prev*10).toFixed(1)}</td><td>${(d.cur*10).toFixed(1)}</td><td class="${cls}">${str}</td><td>${badge}</td></tr>`;
+  prev2Tbody.innerHTML += `<tr><td style="font-weight:600">${d.risk}</td><td>${(d.prev*10).toFixed(1)}</td><td>${(d.cur*10).toFixed(1)}</td><td class="${cls}">${str}</td><td>${badge}</td></tr>`;
 });
 </script>
 
